@@ -1,0 +1,10 @@
+tensorflow==2.15.0
+pandas 
+numpy 
+scikit-learn==1.5.0
+tensorboard
+matplotlib
+streamlit
+scikeras
+ipykernel
+setuptools<81
