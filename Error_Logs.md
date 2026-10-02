@@ -35,6 +35,35 @@ Copy the template below, paste it at the **top** of the "Log Entries" section (n
 
 ## Log Entries
 
+### ERR-010: Merge conflict in `.gitignore` on `git pull --allow-unrelated-histories`
+
+- **Date:** 2026-10-02
+- **File / Area:** .gitignore, Git / GitHub setup
+- **Status:** Resolved
+
+**Error message:**
+```
+> git pull origin main --allow-unrelated-histories
+Auto-merging .gitignore
+CONFLICT (add/add): Merge conflict in .gitignore
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+**Cause:**
+The GitHub repo was created with its own `README.md` and `.gitignore` (GitHub's Python template). The local project also had a `.gitignore`. Both histories added the same file with different content, so Git couldn't merge it automatically.
+
+**Resolution:**
+1. Kept GitHub's Python `.gitignore` (it already ignores `venv/`, `.venv`, `__pycache__/`, `.ipynb_checkpoints`).
+2. Added the project-specific lines it was missing: `logs/` (TensorBoard), `.vscode/`, `.DS_Store`, `Thumbs.db`.
+3. `git add .gitignore`, then `git commit --no-edit` (completes the merge), then `git push -u origin main`.
+
+**Prevention / Notes for the future:**
+- When creating a GitHub repo for existing local code, **don't** tick "Add README / .gitignore / license". Then a plain `git push -u origin main` works with no pull or merge needed.
+- Always add a `.gitignore` with `venv/` and `logs/` **before** the first `git add .`, so the virtual environment (hundreds of MB) is never committed.
+- On a conflict, open the file, remove the `<<<<<<<`, `=======` and `>>>>>>>` markers while keeping the lines you need, then `git add` and `git commit`.
+
+---
+
 ### ERR-009: `streamlit run app.py` fails in the terminal
 
 - **Date:** 2026-10-02
@@ -307,6 +336,7 @@ General precautions collected from the entries above. Update this list whenever 
 - [ ] Keep `setuptools<81` pinned, because TensorBoard 2.15 needs `pkg_resources`. (ERR-007)
 - [ ] In VS Code, view TensorBoard at `http://localhost:6006` (browser or Simple Browser), not inside the cell. (ERR-008)
 - [ ] Start the app with `.\venv\python.exe -m streamlit run app.py` from the folder that contains `app.py`. (ERR-009)
+- [ ] Create GitHub repos **empty** (no README or .gitignore) for existing code, and set up `.gitignore` before the first commit. (ERR-010)
 - [ ] Activate the correct virtual environment before running notebooks or `streamlit run app.py`.
 - [ ] Install dependencies with `pip install -r requirements.txt` after any change to it.
 - [ ] Keep the saved artifacts (`model.h5`, `scaler.pkl`, `label_encoder_gender.pkl`, `onehot_encoder_geo.pkl`) in sync — re-save all of them whenever preprocessing or the model is retrained.
